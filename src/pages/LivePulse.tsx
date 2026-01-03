@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import LivePulseFilters from '../components/live/LivePulseFilters';
+import LivePulseLegend from '../components/live/LivePulseLegend';
 
 
 type WindowFilter = '24h' | '7d' | '30d';
@@ -292,19 +293,9 @@ const LivePulse: React.FC = () => {
   onCompareChange={(val) => { setCompareFilter(val); regenerate({ c: val }); }}
 />
 
-<div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#475569', padding: '7px 10px', border: '1px solid #e5e7eb', borderRadius: '999px', background: '#ffffff' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#4f46e5' }}></span> Total
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#475569', padding: '7px 10px', border: '1px solid #e5e7eb', borderRadius: '999px', background: '#ffffff' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#22c55e' }}></span> Tú
-              </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#475569', padding: '7px 10px', border: '1px solid #e5e7eb', borderRadius: '999px', background: '#ffffff' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#a78bfa' }}></span> Segmento comparado
-              </span>
-            </div>
+<LivePulseLegend />
 
-            <div style={{ marginTop: '10px', fontSize: '12px', color: '#94a3b8' }}>
+<div style={{ marginTop: '10px', fontSize: '12px', color: '#94a3b8' }}>
               Simular sesión: <b>localStorage.setItem('opina_demo_user','1'); location.reload();</b>
             </div>
           </div>
