@@ -1,4 +1,5 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import LivePulseFilters from '../components/live/LivePulseFilters';
 
 
 type WindowFilter = '24h' | '7d' | '30d';
@@ -281,47 +282,17 @@ const LivePulse: React.FC = () => {
           </div>
 
           <div style={{ marginTop: '16px', border: '1px solid #e5e7eb', borderRadius: '18px', padding: '12px', background: '#ffffff', boxShadow: '0 10px 24px rgba(15,23,42,.05)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '10px', alignItems: 'start' }}>
-              <div style={{ gridColumn: 'span 3', minWidth: '240px' }}>
-                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 900 }}>Ventana</div>
-                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {(['24h', '7d', '30d'] as const).map((val) => (
-                    <button
-                      key={val}
-                      style={pillStyle(windowFilter === val)}
-                      onClick={() => { setWindowFilter(val); regenerate({ w: val }); }}
-                    >
-                      {val}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <LivePulseFilters
+  windowFilter={windowFilter}
+  segmentFilter={segmentFilter}
+  compareFilter={compareFilter}
+  pillStyle={pillStyle}
+  onWindowChange={(val) => { setWindowFilter(val); regenerate({ w: val }); }}
+  onSegmentChange={(val) => { setSegmentFilter(val); regenerate({ s: val }); }}
+  onCompareChange={(val) => { setCompareFilter(val); regenerate({ c: val }); }}
+/>
 
-              <div style={{ gridColumn: 'span 5', minWidth: '280px' }}>
-                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 900 }}>Segmento (demo)</div>
-                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button style={pillStyle(segmentFilter === 'all')} onClick={() => { setSegmentFilter('all'); regenerate({ s: 'all' }); }}>Total Chile</button>
-                  <button style={pillStyle(segmentFilter === 'rm')} onClick={() => { setSegmentFilter('rm'); regenerate({ s: 'rm' }); }}>RM</button>
-                  <button style={pillStyle(segmentFilter === 'valpo')} onClick={() => { setSegmentFilter('valpo'); regenerate({ s: 'valpo' }); }}>Valparaíso</button>
-                  <button style={pillStyle(segmentFilter === 'biobio')} onClick={() => { setSegmentFilter('biobio'); regenerate({ s: 'biobio' }); }}>Biobío</button>
-                </div>
-              </div>
-
-              <div style={{ gridColumn: 'span 4', minWidth: '280px' }}>
-                <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 900 }}>Comparar vs</div>
-                <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <button style={pillStyle(compareFilter === 'total')} onClick={() => { setCompareFilter('total'); regenerate({ c: 'total' }); }}>Total</button>
-                  <button style={pillStyle(compareFilter === 'age')} onClick={() => { setCompareFilter('age'); regenerate({ c: 'age' }); }}>Mi edad</button>
-                  <button style={pillStyle(compareFilter === 'gender')} onClick={() => { setCompareFilter('gender'); regenerate({ c: 'gender' }); }}>Mi género</button>
-                  <button style={pillStyle(compareFilter === 'comuna')} onClick={() => { setCompareFilter('comuna'); regenerate({ c: 'comuna' }); }}>Mi comuna</button>
-                </div>
-                <div style={{ marginTop: '8px', fontSize: '12px', color: '#94a3b8' }}>
-                  Si no hay sesión, “Mi edad/género/comuna” usa valores demo.
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
+<div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#475569', padding: '7px 10px', border: '1px solid #e5e7eb', borderRadius: '999px', background: '#ffffff' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#4f46e5' }}></span> Total
               </span>
