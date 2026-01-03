@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import LivePulseFilters from '../components/live/LivePulseFilters';
 import LivePulseLegend from '../components/live/LivePulseLegend';
+import LivePulseSimHint from '../components/live/LivePulseSimHint';
 
 
 type WindowFilter = '24h' | '7d' | '30d';
@@ -295,9 +296,7 @@ const LivePulse: React.FC = () => {
 
 <LivePulseLegend />
 
-<div style={{ marginTop: '10px', fontSize: '12px', color: '#94a3b8' }}>
-              Simular sesión: <b>localStorage.setItem('opina_demo_user','1'); location.reload();</b>
-            </div>
+<LivePulseSimHint />
           </div>
 
           <div style={{ marginTop: '14px', display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '12px' }}>
