@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import useLivePulseSession from '../hooks/useLivePulseSession';
 import LivePulseFilters from '../components/live/LivePulseFilters';
 import LivePulseLegend from '../components/live/LivePulseLegend';
 import LivePulseSimHint from '../components/live/LivePulseSimHint';
@@ -81,8 +82,7 @@ const buildData = (
   windowFilter: '24h' | '7d' | '30d',
   segmentFilter: 'all' | 'rm' | 'valpo' | 'biobio',
   compareFilter: 'total' | 'age' | 'gender' | 'comuna',
-  userConnected: boolean
-): LivePulseData => {
+  userConnected: boolean, demoProfile?: unknown): LivePulseData => {
   const baseVotes = windowFilter === '24h' ? 18427 : windowFilter === '7d' ? 126840 : 532900;
   const segMult =
     segmentFilter === 'all' ? 1.0 : segmentFilter === 'rm' ? 0.46 : segmentFilter === 'valpo' ? 0.16 : 0.12;
@@ -122,6 +122,7 @@ const buildData = (
 
   const segBias = compareFilter === 'age' ? 6 : compareFilter === 'gender' ? 4 : compareFilter === 'comuna' ? 5 : 2;
   let sharesSeg = sharesTotal.map((v, i) => {
+  void demoProfile;
     const dir = i === 1 ? 1 : i === 0 ? -1 : 0;
     return clamp(Math.round(v + dir * segBias + (Math.random() * 10 - 5)), 5, 78);
   });
@@ -213,24 +214,20 @@ const LivePulse: React.FC = () => {
   const [windowFilter, setWindowFilter] = useState<WindowFilter>(INITIAL_WINDOW);
   const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>(INITIAL_SEGMENT);
   const [compareFilter, setCompareFilter] = useState<CompareFilter>(INITIAL_COMPARE);
-
-  const [isUser, setIsUser] = useState<boolean>(() => getUserConnected());
+      const { isUser, demoProfile } = useLivePulseSession();
   const [data, setData] = useState<LivePulseData>(() =>
-    buildData(INITIAL_WINDOW, INITIAL_SEGMENT, INITIAL_COMPARE, getUserConnected())
-  );
-
+    buildData(INITIAL_WINDOW, INITIAL_SEGMENT, INITIAL_COMPARE, getUserConnected(), demoProfile));
   const regenerate = useCallback(
     (next?: { w?: WindowFilter; s?: SegmentFilter; c?: CompareFilter }) => {
       const userConnected = getUserConnected();
-      setIsUser(userConnected);
 
       const w = next?.w ?? windowFilter;
       const s = next?.s ?? segmentFilter;
       const c = next?.c ?? compareFilter;
 
-      setData(buildData(w, s, c, userConnected));
+      setData(buildData(w, s, c, userConnected, demoProfile));
     },
-    [windowFilter, segmentFilter, compareFilter]
+    [windowFilter, segmentFilter, compareFilter, demoProfile]
   );
 
   useEffect(() => {
