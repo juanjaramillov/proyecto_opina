@@ -34,13 +34,11 @@ export type LivePulseData = {
   story: Story;
 };
 
-export type DemoProfile = { ageBand: string; gender: string; comuna: string };
-
-const DEMO_PROFILE: DemoProfile = {
+const DEMO_PROFILE = {
   ageBand: '25-34',
   gender: 'Hombre',
   comuna: 'Providencia',
-};
+} as const;
 
 const clamp = (n: number, a: number, b: number) => Math.max(a, Math.min(b, n));
 
@@ -57,11 +55,8 @@ export function buildLivePulseData(
   windowFilter: WindowFilter,
   segmentFilter: SegmentFilter,
   compareFilter: CompareFilter,
-  userConnected: boolean,
-  demoProfile?: DemoProfile
+  userConnected: boolean
 ): LivePulseData {
-  const profile = demoProfile ?? DEMO_PROFILE;
-
   const baseVotes = windowFilter === '24h' ? 18427 : windowFilter === '7d' ? 126840 : 532900;
   const segMult =
     segmentFilter === 'all' ? 1.0 : segmentFilter === 'rm' ? 0.46 : segmentFilter === 'valpo' ? 0.16 : 0.12;
@@ -74,14 +69,18 @@ export function buildLivePulseData(
       )
     : null;
 
-  const signals = Math.round((windowFilter === '24h' ? 38 : windowFilter === '7d' ? 96 : 240) * (0.85 + Math.random() * 0.35));
-  const vol = Math.round(clamp((windowFilter === '24h' ? 62 : windowFilter === '7d' ? 55 : 48) + (Math.random() * 14 - 7), 25, 85));
+  const signals = Math.round(
+    (windowFilter === '24h' ? 38 : windowFilter === '7d' ? 96 : 240) * (0.85 + Math.random() * 0.35)
+  );
+  const vol = Math.round(
+    clamp((windowFilter === '24h' ? 62 : windowFilter === '7d' ? 55 : 48) + (Math.random() * 14 - 7), 25, 85)
+  );
 
   const moodTotal = Math.round(clamp(63 + (Math.random() * 10 - 5), 30, 85));
   const moodYou = userConnected ? Math.round(clamp(58 + (Math.random() * 14 - 7), 25, 90)) : null;
   const moodSeg = Math.round(clamp(moodTotal + (Math.random() * 10 - 5), 25, 90));
 
-  const topicsList: Omit<Topic, 'total' | 'you' | 'seg'>[] = [
+  const topicsList: Array<{ k: string; name: string }> = [
     { k: 'seguridad', name: 'Seguridad' },
     { k: 'economia', name: 'Economía' },
     { k: 'salud', name: 'Salud' },
@@ -111,7 +110,6 @@ export function buildLivePulseData(
   let hotIdx = 0;
   for (let i = 1; i < topicsList.length; i++) if (sharesTotal[i] > sharesTotal[hotIdx]) hotIdx = i;
   const hot = topicsList[hotIdx].name;
-
   const trendTotal = Math.random() * 8 + 6.5;
   const trendYou = userConnected ? Math.random() * 10 + 1.5 : null;
   const trendSeg = Math.random() * 8 + 3.0;
@@ -141,7 +139,7 @@ export function buildLivePulseData(
   const ages = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
   const heat: HeatCell[] = ages.map((a) => {
     let base = 30 + Math.random() * 50;
-    if (a === profile.ageBand) base += 8;
+    if (a === DEMO_PROFILE.ageBand) base += 8;
     return { a, v: Math.round(clamp(base, 10, 95)) };
   });
 
