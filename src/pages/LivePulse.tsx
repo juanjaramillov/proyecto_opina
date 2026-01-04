@@ -6,17 +6,7 @@ import LivePulseSimHint from '../components/live/LivePulseSimHint';
 import PageShell from '../components/layout/PageShell';
 import { Link } from 'react-router-dom';
 import { buildLivePulseData, WindowFilter, SegmentFilter, CompareFilter, LivePulseData } from '../services/livePulseBuilder';
-const fmtCL = (n: number) => {
-  try { return n.toLocaleString('es-CL'); } catch { return String(n); }
-};
-const getUserConnected = () => {
-  try {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('opina_demo_user') === '1';
-  } catch {
-    return false;
-  }
-};
+import { fmtCL, getUserConnected } from '../services/livePulseUtils';
 const LivePulse: React.FC = () => {
   const INITIAL_WINDOW: '24h' | '7d' | '30d' = '24h';
   const INITIAL_SEGMENT: 'all' | 'rm' | 'valpo' | 'biobio' = 'all';
@@ -25,7 +15,7 @@ const LivePulse: React.FC = () => {
   const [windowFilter, setWindowFilter] = useState<WindowFilter>(INITIAL_WINDOW);
   const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>(INITIAL_SEGMENT);
   const [compareFilter, setCompareFilter] = useState<CompareFilter>(INITIAL_COMPARE);
-      const { isUser } = useLivePulseSession();
+  const { isUser } = useLivePulseSession();
   const [data, setData] = useState<LivePulseData>(() =>
     buildLivePulseData(INITIAL_WINDOW, INITIAL_SEGMENT, INITIAL_COMPARE, getUserConnected()));
   const regenerate = useCallback(
