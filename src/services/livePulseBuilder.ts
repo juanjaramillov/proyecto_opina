@@ -1,8 +1,13 @@
+/**
+ * LivePulse builder
+ * Fuente única de datos para la vista LivePulse.
+ */
+
 export type WindowFilter = '24h' | '7d' | '30d';
 export type SegmentFilter = 'all' | 'rm' | 'valpo' | 'biobio';
 export type CompareFilter = 'total' | 'age' | 'gender' | 'comuna';
 
-export type Topic = { k: string; name: string; total: number; you: number | null; seg: number };
+export type Topic = { k: string; name: string };
 export type Comuna = { n: string; v: number };
 export type HeatCell = { a: string; v: number };
 export type Story = { title: string; delta: string; total: number; seg: number };
@@ -17,9 +22,9 @@ export type LivePulseData = {
   moodYou: number | null;
   moodSeg: number;
 
-  topics: Topic[];
-  hot: string;
+  topics: Array<Topic & { total: number; you: number | null; seg: number }>;
 
+  hot: string;
   trendTotal: number;
   trendYou: number | null;
   trendSeg: number;
@@ -69,18 +74,14 @@ export function buildLivePulseData(
       )
     : null;
 
-  const signals = Math.round(
-    (windowFilter === '24h' ? 38 : windowFilter === '7d' ? 96 : 240) * (0.85 + Math.random() * 0.35)
-  );
-  const vol = Math.round(
-    clamp((windowFilter === '24h' ? 62 : windowFilter === '7d' ? 55 : 48) + (Math.random() * 14 - 7), 25, 85)
-  );
+  const signals = Math.round((windowFilter === '24h' ? 38 : windowFilter === '7d' ? 96 : 240) * (0.85 + Math.random() * 0.35));
+  const vol = Math.round(clamp((windowFilter === '24h' ? 62 : windowFilter === '7d' ? 55 : 48) + (Math.random() * 14 - 7), 25, 85));
 
   const moodTotal = Math.round(clamp(63 + (Math.random() * 10 - 5), 30, 85));
   const moodYou = userConnected ? Math.round(clamp(58 + (Math.random() * 14 - 7), 25, 90)) : null;
   const moodSeg = Math.round(clamp(moodTotal + (Math.random() * 10 - 5), 25, 90));
 
-  const topicsList: Array<{ k: string; name: string }> = [
+  const topicsList: Topic[] = [
     { k: 'seguridad', name: 'Seguridad' },
     { k: 'economia', name: 'Economía' },
     { k: 'salud', name: 'Salud' },
@@ -110,6 +111,7 @@ export function buildLivePulseData(
   let hotIdx = 0;
   for (let i = 1; i < topicsList.length; i++) if (sharesTotal[i] > sharesTotal[hotIdx]) hotIdx = i;
   const hot = topicsList[hotIdx].name;
+
   const trendTotal = Math.random() * 8 + 6.5;
   const trendYou = userConnected ? Math.random() * 10 + 1.5 : null;
   const trendSeg = Math.random() * 8 + 3.0;
