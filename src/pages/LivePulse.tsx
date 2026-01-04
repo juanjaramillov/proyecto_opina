@@ -1,40 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import useLivePulseSession from '../hooks/useLivePulseSession';
+import { useLivePulseData } from '../hooks/useLivePulseData';
 import LivePulseFilters from '../components/live/LivePulseFilters';
 import LivePulseLegend from '../components/live/LivePulseLegend';
 import LivePulseSimHint from '../components/live/LivePulseSimHint';
 import PageShell from '../components/layout/PageShell';
 import { Link } from 'react-router-dom';
-import { buildLivePulseData, WindowFilter, SegmentFilter, CompareFilter, LivePulseData } from '../services/livePulseBuilder';
-import { fmtCL, getUserConnected } from '../services/livePulseUtils';
+import { fmtCL } from '../services/livePulseUtils';
 const LivePulse: React.FC = () => {
-  const INITIAL_WINDOW: '24h' | '7d' | '30d' = '24h';
-  const INITIAL_SEGMENT: 'all' | 'rm' | 'valpo' | 'biobio' = 'all';
-  const INITIAL_COMPARE: 'total' | 'age' | 'gender' | 'comuna' = 'total';
-
-  const [windowFilter, setWindowFilter] = useState<WindowFilter>(INITIAL_WINDOW);
-  const [segmentFilter, setSegmentFilter] = useState<SegmentFilter>(INITIAL_SEGMENT);
-  const [compareFilter, setCompareFilter] = useState<CompareFilter>(INITIAL_COMPARE);
   const { isUser } = useLivePulseSession();
-  const [data, setData] = useState<LivePulseData>(() =>
-    buildLivePulseData(INITIAL_WINDOW, INITIAL_SEGMENT, INITIAL_COMPARE, getUserConnected()));
-  const regenerate = useCallback(
-    (next?: { w?: WindowFilter; s?: SegmentFilter; c?: CompareFilter }) => {
-      const userConnected = getUserConnected();
 
-      const w = next?.w ?? windowFilter;
-      const s = next?.s ?? segmentFilter;
-      const c = next?.c ?? compareFilter;
-
-      setData(buildLivePulseData(w, s, c, userConnected));
-    },
-    [windowFilter, segmentFilter, compareFilter]
-  );
-
-  useEffect(() => {
-    const interval = setInterval(() => regenerate(), 60000);
-    return () => clearInterval(interval);
-  }, [regenerate]);
+  const {
+    data,
+    windowFilter,
+    segmentFilter,
+    compareFilter,
+    setWindowFilter,
+    setSegmentFilter,
+    setCompareFilter,
+    regenerate,
+  } = useLivePulseData();
 
   const pillStyle = useCallback((active: boolean) => ({
     appearance: 'none' as const,
